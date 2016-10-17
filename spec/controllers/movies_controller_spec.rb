@@ -20,5 +20,16 @@ describe MoviesController do
       post :search_tmdb, {:search_terms => 'Ted'}
       expect(assigns(:movies)).to eq(fake_results)
     end 
+    it 'should redirect to movies page if search term is null' do
+      post :search_tmdb, {:search_terms => ''}
+      allow(Movie).to receive(:find_in_tmdb)
+      expect(response).to redirect_to('/movies')
+    end
+    it 'should redirect to movies if search results 0 values' do
+      post :search_tmdb, {:search_terms => 'gfdgdfdgd'}
+      allow(Movie).to receive(:find_in_tmdb)
+      expect(response).to redirect_to('/movies')
+    end
   end
+  
 end
