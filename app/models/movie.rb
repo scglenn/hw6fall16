@@ -47,10 +47,14 @@ class Movie::InvalidKeyError < StandardError ; end
   
   def self.getRating(id)
     begin
+      
       Tmdb::Api.key("f4702b08c0ac6ea5b51425788bb26562")
-      rating =Tmdb::Movie.releases(id)["countries"].select{ |m| m['iso_3166_1'] =="US"}
+      check =Tmdb::Movie.releases(id)["countries"]
+      if(check!=nil)
+      rating =check.select{ |m| m['iso_3166_1'] =="US"}
       return rating
-    rescue
+      end
+    rescue Tmdb::InvalidApiKeyError
       raise Movie::InvalidKeyError, 'Invalid API key'
     end
 
@@ -62,7 +66,7 @@ class Movie::InvalidKeyError < StandardError ; end
     movie_stats = Tmdb::Movie.detail(tmdb_id)
     
     rate =self.getRating(tmdb_id)
-        
+    if(rate!=nil)
         if(rate[0]==nil)
            rate = "NR"
         else
@@ -72,7 +76,7 @@ class Movie::InvalidKeyError < StandardError ; end
             rate = rate[0]["certification"]
           end
         end
-        
+    end
             
   
     
