@@ -8,7 +8,7 @@ describe Movie do
         Movie.find_in_tmdb('Inception')
       end
       context 'with no match found' do
-        it 'should return  an array taht is empty' do
+        it 'should return  an array thatt is empty' do
           allow(Tmdb::Movie).to receive(:find).with('').and_return (nil)
           expect(Movie.find_in_tmdb('')).to eq([])
         end

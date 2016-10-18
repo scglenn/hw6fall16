@@ -42,7 +42,26 @@ describe MoviesController do
       expect(response).to redirect_to('/movies')
     end
 
+
   end
-  
+  describe 'Finding movie in TMDb' do
+    it 'should call the find_in_tmdb method' do
+      allow(Movie).to receive(:find_in_tmdb)
+      post :search_tmdb, {:search_terms => 'Bull'}
+      expect(response).to render_template('search_tmdb')
+    end
+  end
+  describe 'Create movie from TMDb' do
+     it 'should call the model method that performs create_from_tmdb' do
+        post :add_tmdb, {"tmdb_movies"=>{"941"=>"1"}, }
+        expect(flash[:notice]).to be_present
+        expect(response).to redirect_to('/movies')
+     end
+     it 'should notify No movies selected and redirect to movies' do
+        post :add_tmdb, {"tmdb_movies"=> nil}
+        expect(flash[:warning]).to eq "No movies selected"
+        expect(response).to redirect_to('/movies')
+     end
+  end
   
 end
