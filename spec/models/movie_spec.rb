@@ -1,10 +1,17 @@
-
+require 'spec_helper'
+require 'rails_helper'
 describe Movie do
   describe 'searching Tmdb by keyword' do
     context 'with valid key' do
       it 'should call Tmdb with title keywords' do
         expect( Tmdb::Movie).to receive(:find).with('Inception')
         Movie.find_in_tmdb('Inception')
+      end
+      context 'with no match found' do
+        it 'should return  an array taht is empty' do
+          allow(Tmdb::Movie).to receive(:find).with('').and_return (nil)
+          expect(Movie.find_in_tmdb('')).to eq([])
+        end
       end
     end
     context 'with invalid key' do
@@ -14,28 +21,5 @@ describe Movie do
       end
     end
   end
-  
-  describe 'adding to RP by id' do
-    it 'should call tmdb with id' do
-      expect(Tmdb::Movie).to receive(:detail).with('2').and_call_original
-      Movie.create_from_tmdb('2')
-      
-    end
-  end 
-  
-  describe 'adding to RP' do
-    it 'should call model method that creates from TMDb' do
-      fake_results = [double('movie3')]
-      expect(Movie).to receive(:create_from_tmdb).with('2') and return(fake_results)
-      post :add_tmdb, {:checkbox => {'2':'1'}}
-    end
-    it 'should call model method id of the selected movie' do
-      expect(Movie).to receive(:create_from_tmdb).with('2')
-      post :add_tmdb, {:checkbox => {'2':'1'}}
-    end
-    it 'should redirect to movies if no movies selected' do
-      post :add_tmdb, {}
-      expect(response).to redirect_to('/movies')
-    end
-  end
 end
+

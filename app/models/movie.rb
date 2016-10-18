@@ -10,7 +10,9 @@ class Movie::InvalidKeyError < StandardError ; end
     begin
       
       Tmdb::Api.key("f4702b08c0ac6ea5b51425788bb26562")
-      Tmdb::Movie.find(string).each do |i|
+      check = Tmdb::Movie.find(string)
+      if(check !=nil)
+      check.each do |i|
         movie_element= Hash.new
         movie_element[:tmdb_id] =i.id
         movie_element[:title] =i.title
@@ -26,9 +28,16 @@ class Movie::InvalidKeyError < StandardError ; end
             movie_element[:rating] = rating[0]["certification"]
           end
         end
+        
+        if(i.release_date.blank?)
+          movie_element[:release_date]=movie_element[:release_date]=i.release_date
+        else
+          movie_element[:release_date]=i.release_date
+        end
       
-        movie_element[:release_date]=i.release_date
+        
         movie_list.push( movie_element)
+      end
       end
     rescue Tmdb::InvalidApiKeyError
         raise Movie::InvalidKeyError, 'Invalid API key'
@@ -63,6 +72,9 @@ class Movie::InvalidKeyError < StandardError ; end
             rate = rate[0]["certification"]
           end
         end
+        
+            
+  
     
     Movie.create(title: movie_stats["original_title"], rating: rate, description: movie_stats["overview"], release_date: movie_stats["release_date"])
   end
